@@ -1,6 +1,8 @@
 import json
 from .packet import Packet
 from .http import init_headers, send_req
+from .normalizer import normalize_json
+from .encryption import sign
 
 
 PRIORITIES = ["normal", "fast"]
@@ -31,3 +33,14 @@ class Moadian():
             "economicCode": economic_code},).to_dict()
         r = send_req(url, headers, self.data)
         return json.loads(r.text)
+
+    def get_token(self):
+        url = self.base_url + "/GET_TOKEN"
+        data = {"time": 1, "packet": None, "signature": ""}
+        data["packet"] = Packet("GET_TOKEN", self.fiscal_id, {
+                                'username': self.fiscal_id}).to_dict()
+        headers = init_headers()
+        res = normalize_json(data["packet"], headers)
+        data["signature"] = sign(res, self.private_key)
+        res = send_req(url, headers, data)
+        return json.loads(res.text)
