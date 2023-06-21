@@ -44,3 +44,18 @@ class Moadian():
         data["signature"] = sign(res, self.private_key)
         res = send_req(url, headers, data)
         return json.loads(res.text)
+
+    def inquiry_by_reference_number(self, reference_number):
+        url = self.base_url + "/INQUIRY_BY_REFERENCE_NUMBER"
+        data = {"time": 1, "packet": None, "signature": ""}
+        data["packet"] = Packet('INQUIRY_BY_REFERENCE_NUMBER', self.fiscal_id, {
+                                "referenceNumber": [reference_number]}).to_dict()
+        headers = init_headers()
+        token = self.get_token()['result']['data']['token']
+        copied_headers = headers.copy()
+        copied_headers["Authorization"] = token
+        headers["Authorization"] = "Bearer " + token
+        res = normalize_json(data["packet"], copied_headers)
+        data["signature"] = sign(res, self.private_key)
+        res = send_req(url, headers, data)
+        return json.loads(res.text)
