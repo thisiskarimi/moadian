@@ -1,4 +1,6 @@
+import os
 import json
+import tempfile
 from .packet import Packet
 from .http import init_headers, send_req
 from .normalizer import normalize_json
@@ -14,10 +16,28 @@ class Moadian():
     def __init__(self, fiscal_id, private_key, mode="self-tsp") -> None:
         self.private_key = private_key
         self.fiscal_id = fiscal_id
-        self.data = {"time": 1, "signature": ""}
         self.base_url = self.base_url.format(mode=mode)
 
-    def get_server_information(self):
+    def _get_tax_gov_key(self):
+        # look for a file containing key
+        temp_dir = tempfile.gettempdir()
+        filename = "tax_gov_key"
+        where_to_find = os.path.join(temp_dir, filename)
+        if os.path.isfile(where_to_find):
+            try:
+                with open(where_to_find) as f:
+                    k = json.load(f.read())
+                return k['id'], k['key']
+            except Exception:
+                pass
+        srv_info = self.get_server_information()
+        k = srv_info["result"]["data"]["publicKeys"][0]
+        # save it for further uses
+        with open(where_to_find, 'w') as f:
+            json.dump(srv_info["result"]["data"]["publicKeys"][0], f)
+        return k['id'], k['key']
+
+    def get_server_information(self):        
         url = self.base_url + "/GET_SERVER_INFORMATION"
         headers = init_headers()
         data = {"time": 1, "signature": ""}
