@@ -1,8 +1,16 @@
+import os
 import base64
+import subprocess
 from Crypto.Signature import pkcs1_15
 from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
+
+
+def xor_and_encrypt_data(data, key, iv):
+    base_command = "php "+os.path.join(os.path.dirname(os.path.abspath(__file__)), "helper.php")+" {key} {iv} '{invoice}' "
+    result = subprocess.check_output(base_command.format(key=key, iv=iv, invoice=data), shell=True, universal_newlines=True)
+    return result
 
 
 def encrypt_aes_key(public_key, aes_key):
