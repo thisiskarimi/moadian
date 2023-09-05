@@ -54,11 +54,12 @@ class Moadian():
         return json.loads(r.text)
 
     def get_economic_code_information(self, economic_code):
+        data = {"time": 1, "packet": None, "signature": ""}
         url = self.base_url + "/GET_ECONOMIC_CODE_INFORMATION"
         headers = init_headers()
-        self.data["packet"] = Packet("GET_ECONOMIC_CODE_INFORMATION", self.fiscal_id, {
+        data["packet"] = Packet("GET_ECONOMIC_CODE_INFORMATION", self.fiscal_id, {
             "economicCode": economic_code},).to_dict()
-        r = send_req(url, headers, self.data)
+        r = send_req(url, headers, data)
         return json.loads(r.text)
 
     def get_token(self):
