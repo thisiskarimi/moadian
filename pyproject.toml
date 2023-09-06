@@ -1,0 +1,29 @@
+# pyproject.toml
+
+[build-system]
+requires      = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "moadian"
+version = "1.0.2"
+description = "Connect to Moadian API"
+readme = "README.md"
+authors = [{ name = "Mojtaba Karimi", email = "hi@thisiskarimi.com" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+keywords = ["moadian", ]
+
+requires-python = ">=3.6"
+
+dependencies = [
+    "requests",
+    "pycryptodome",
+]
+
+[project.urls]
+Homepage = "https://github.com/thisiskarimi/moadian"
