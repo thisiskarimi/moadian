@@ -44,7 +44,7 @@ class Moadian():
             return json.loads(invoice)
         raise Exception("Invalid invoice!")
 
-    def get_server_information(self):        
+    def get_server_information(self):
         url = self.base_url + "/GET_SERVER_INFORMATION"
         headers = init_headers()
         data = {"time": 1, "signature": ""}
@@ -82,15 +82,20 @@ class Moadian():
         data['packets'] = [Packet('INVOICE.V01', self.fiscal_id).to_dict()]
         data['packets'][0]['data'] = invoice
         normalized = normalize_json(invoice)
-        data['packets'][0]['dataSignature'] = sign(normalized, self.private_key)
+        data['packets'][0]['dataSignature'] = sign(
+            normalized, self.private_key)
         key = os.urandom(32).hex()
         iv = os.urandom(16).hex()
         tax_gov_key_id, tax_gov_public_key = self._get_tax_gov_key()
         data['packets'][0]['iv'] = iv
-        data['packets'][0]['symmetricKey'] = encrypt_aes_key(tax_gov_public_key, key)
+        data['packets'][0]['symmetricKey'] = encrypt_aes_key(
+            tax_gov_public_key, key)
         data['packets'][0]['encryptionKeyId'] = tax_gov_key_id
         data['packets'][0]['data'] = xor_and_encrypt_data(
-            json.dumps(data['packets'][0]['data']), key, iv)
+            data['packets'][0]['data'],
+            key,
+            iv
+        )
         headers = init_headers()
         token = self.get_token()['result']['data']['token']
         clonhead = headers.copy()
